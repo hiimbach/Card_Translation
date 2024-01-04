@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 CARD_NAME_LINK = 'https://www.db.yugioh-card.com/yugiohdb/card_search.action?ope=2&cid='
 
-###### FUNCTIONS ######
+###### CRAWLING FUNCTIONS ######
 
 def crawl_card(url, locale):
     # Fetch the HTML content of the webpage
@@ -37,7 +37,6 @@ def crawl_card(url, locale):
         
     return card_name, card_description, card_pen, side_content
 
-
 def get_name(soup_content, locale):
     # Find card name
     try:
@@ -50,7 +49,6 @@ def get_name(soup_content, locale):
         card_name = ''
     return card_name
 
-
 def get_description(soup_content):
     des_text = soup_content.find_all('div', {'class': 'item_box_text'})
     if len(des_text) == 1:
@@ -61,8 +59,7 @@ def get_description(soup_content):
         pen_eff = des_text[0].text.strip()
         mons_eff = des_text[1].text
     
-    return mons_eff.split('\n\t\t\t\t\t\n\t\t\t\t\t')[1].strip(), pen_eff
-    
+    return mons_eff.strip().split('\n\t\t\t\t\t\n\t\t\t\t\t')[1].strip(), pen_eff
     
 def get_side_content(soup_content):
     try:
@@ -70,7 +67,6 @@ def get_side_content(soup_content):
         return spec.text.replace('\n', '').strip()
     except:
         return ''
-
 
 def crawl_id(id):
     ## EN ##
@@ -82,7 +78,6 @@ def crawl_id(id):
     card_name_ja, card_description_ja, card_pen_ja, side_content_ja = crawl_card(url_ja, 'ja')
     
     return card_name_en, side_content_en, card_description_en, card_pen_en, card_name_ja, side_content_ja, card_description_ja, card_pen_ja
-    
     
 def creat_card_dataset(first, last, save_path = 'data'):
     i = 0
@@ -108,6 +103,14 @@ def creat_card_dataset(first, last, save_path = 'data'):
     df.to_csv(os.path.join(save_path, f"card_dataset_{first}_{last}.csv"), index=False)
         
     return 
+
+###### TEXT PROCESSING FUNCTIONS ######
+
+def remove_redundant(text):
+    # Remove redundant spaces
+    text = text.replace('""', '"')
+    return text
+    
 
 if __name__ == '__main__':
     first = int(sys.argv[1])
