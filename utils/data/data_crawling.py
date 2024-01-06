@@ -1,5 +1,7 @@
 import os 
 import sys
+from typing import Optional, Union
+
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd 
@@ -68,7 +70,7 @@ def get_side_content(soup_content):
     except:
         return ''
 
-def crawl_id(id):
+def crawl_id(id):   
     ## EN ##
     url_en = CARD_NAME_LINK + str(id) + '&request_locale=en'
     card_name_en, card_description_en, card_pen_en, side_content_en = crawl_card(url_en, 'en')
@@ -79,14 +81,30 @@ def crawl_id(id):
     
     return card_name_en, side_content_en, card_description_en, card_pen_en, card_name_ja, side_content_ja, card_description_ja, card_pen_ja
     
-def creat_card_dataset(first, last, save_path = 'data'):
-    i = 0
-    df = pd.DataFrame(columns=['id', 'name_en', 'side_content_en', 'description_en', 'pen_eff_en', 'name_ja', 'side_content_ja', 'description_ja', 'pen_eff_ja', 'available'])
+def creat_card_dataset(first, last, save_path = 'data', prep_data_path: Optional[Union[str, os.PathLike]] = None):
+    '''
+    This function can either create a new dataset or modify an existing dataset
+    '''
+    if prep_data_path:
+        df = pd.read_csv(prep_data_path)
+        prep_ids = df['id'].tolist()
+        i = len(df)
+        ids_to_crawl = list(set(range(first, last)) - set(prep_ids))
+    else:
+        df = pd.DataFrame(columns=['id', 'name_en', 'side_content_en', 'description_en', 'pen_eff_en', 'name_ja', 'side_content_ja', 'description_ja', 'pen_eff_ja', 'available'])
+        prep_ids = []
+        i = 0
+        ids_to_crawl = list(range(first, last))
+    
     
     # Start crawling
     print(f"Start crawling from {first} to {last}")
     
-    for id in tqdm(range(first, last)):
+    # Loop from the first id to the last id
+    for id in tqdm(ids_to_crawl):
+        if id in prep_ids:
+            continue
+        
         card = crawl_id(id)
         
         # Add card to dataframe
@@ -103,14 +121,6 @@ def creat_card_dataset(first, last, save_path = 'data'):
     df.to_csv(os.path.join(save_path, f"card_dataset_{first}_{last}.csv"), index=False)
         
     return 
-
-###### TEXT PROCESSING FUNCTIONS ######
-
-def remove_redundant(text):
-    # Remove redundant spaces
-    text = text.replace('""', '"')
-    return text
-    
 
 if __name__ == '__main__':
     first = int(sys.argv[1])
