@@ -1,0 +1,13 @@
+data_pipeline:
+  crawling: 
+    first_id: 4007
+    last_id: 4040
+    prep_data_path: null
+    save_path: /Users/bachle/Main/Code/Projects/Yugioh_Translator/sample/data
+    postfix: _090124  # Should be started with _
+
+  splitting: 
+    save_path: /Users/bachle/Main/Code/Projects/Yugioh_Translator/sample/training
+    test_split_rate: 0.2
+    postfix: _090124
+    

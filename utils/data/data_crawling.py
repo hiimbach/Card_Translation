@@ -81,7 +81,11 @@ def crawl_id(id):
     
     return card_name_en, side_content_en, card_description_en, card_pen_en, card_name_ja, side_content_ja, card_description_ja, card_pen_ja
     
-def creat_card_dataset(first, last, save_path = 'data', prep_data_path: Optional[Union[str, os.PathLike]] = None):
+def crawling_card_ds(first, 
+                     last, 
+                     save_path: Optional[Union[str, os.PathLike]] = None, 
+                     prep_data_path: Optional[Union[str, os.PathLike]] = None, 
+                     postfix: Optional[str] = None):
     '''
     This function can either create a new dataset or modify an existing dataset
     '''
@@ -118,11 +122,13 @@ def creat_card_dataset(first, last, save_path = 'data', prep_data_path: Optional
         i+= 1
         
     # Save dataframe
-    df.to_csv(os.path.join(save_path, f"card_dataset_{first}_{last}.csv"), index=False)
+    df_save_path = os.path.join(save_path, f"card_dataset_{first}_{last}{postfix}.csv")
+    print("Crawl data is saved at", df_save_path)
+    df.to_csv(df_save_path, index=False)
         
-    return 
+    return df
 
 if __name__ == '__main__':
     first = int(sys.argv[1])
     last = int(sys.argv[2])
-    creat_card_dataset(first, last)
+    crawling_card_ds(first, last, save_path='data')
