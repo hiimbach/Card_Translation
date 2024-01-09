@@ -1,0 +1,20 @@
+data:
+
+configs:
+    - data_pipeline_config.yml: Yaml file for data pipeline.
+
+
+pipeline:
+    - data_pipeline.py: Crawl, format and construct training data.
+
+
+utils:
+    data:
+        - data_crawling.py: Crawl data from `https://www.db.yugioh-card.com/`.
+        - data_prepare.py: Helping functions for creating dataset.
+        - dataset.py: Custom Dataset class for training.
+        - tokenizer.py: Custom tokenizer to tokenize both english and japanese.
+
+
+model: 
+    - train.py: Training loop  
